@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Physics · Energy Practice</title>
+<style>
+:root{
+  --ink:#1b2a21; --soft:#5d6f64; --line:#d9e2db; --bg:#f4f6f4; --card:#fff;
+  --brand:#1e6b46; --brandd:#175437; --amber:#d98e2b; --ok:#1e7a4d; --no:#b3261e;
+  --okbg:#e8f4ed; --nobg:#fdeceb;
+}
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  padding-bottom:104px;}
+header{background:var(--brand);color:#fff;padding:20px 18px 18px;}
+header h1{margin:0;font-size:1.35rem;letter-spacing:-.01em;}
+header p{margin:5px 0 0;opacity:.9;font-size:.92rem;}
+nav{position:sticky;top:0;z-index:30;background:var(--brandd);
+  display:flex;gap:7px;overflow-x:auto;padding:9px 12px;-webkit-overflow-scrolling:touch;}
+nav button{flex:0 0 auto;background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:999px;
+  padding:6px 13px;font-size:.8rem;cursor:pointer;white-space:nowrap;}
+nav button .chip{display:inline-block;margin-left:6px;opacity:.75;}
+nav button.done{background:var(--amber);color:#1b2a21;font-weight:600;}
+main{max-width:860px;margin:0 auto;padding:16px 14px 0;}
+.sec{margin-bottom:26px;}
+.sec h2{font-size:1.02rem;margin:22px 0 10px;color:var(--brandd);
+  border-bottom:2px solid var(--line);padding-bottom:7px;}
+.sec h2 .rng{float:right;color:var(--soft);font-weight:400;font-size:.85rem;}
+.secnote{margin:-2px 0 11px;font-size:.88rem;color:var(--brandd);background:#eaf3ee;border-left:3px solid var(--brand);padding:7px 11px;border-radius:0 7px 7px 0;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:14px 15px;margin-bottom:11px;}
+.qn{font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--soft);margin-bottom:6px;}
+.stem{margin:0 0 11px;}
+.opts{display:flex;flex-direction:column;gap:7px;}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;
+  background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px 12px;
+  font:inherit;color:inherit;cursor:pointer;}
+.opt:hover{border-color:var(--brand);}
+.opt .ol{flex:0 0 22px;height:22px;border-radius:50%;background:var(--bg);
+  display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--soft);}
+.opt.sel{border-color:var(--brand);background:#eef6f1;}
+.opt.sel .ol{background:var(--brand);color:#fff;}
+.opt.ok{border-color:var(--ok);background:var(--okbg);}
+.opt.no{border-color:var(--no);background:var(--nobg);}
+.numwrap,.txtwrap{display:flex;align-items:center;gap:9px;}
+.numwrap input,.txtwrap input,.bin input{font:inherit;padding:9px 11px;border:1px solid var(--line);
+  border-radius:9px;background:#fff;color:inherit;width:170px;}
+.txtwrap input{width:100%;max-width:420px;}
+.numwrap input:focus,.txtwrap input:focus,.bin input:focus{outline:2px solid var(--brand);outline-offset:1px;}
+.unit{color:var(--soft);font-size:.92rem;}
+.tray{display:flex;flex-wrap:wrap;gap:7px;min-height:46px;background:var(--bg);
+  border:1px dashed var(--line);border-radius:10px;padding:8px;margin-bottom:11px;}
+.trayempty{color:var(--soft);font-size:.85rem;padding:4px 6px;}
+.tile{background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 13px;
+  font:inherit;font-size:.9rem;color:inherit;cursor:pointer;}
+.tile.pick{border-color:var(--amber);background:#fdf3e3;box-shadow:0 0 0 2px #f2dcb6;}
+.tile.ok{border-color:var(--ok);background:var(--okbg);}
+.tile.bad{border-color:var(--no);background:var(--nobg);}
+.srow{display:grid;grid-template-columns:34px minmax(110px,1fr) minmax(150px,1.5fr);
+  gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line);}
+.srow:first-child{border-top:0;}
+.snum{color:var(--soft);font-size:.85rem;}
+.ssrc{font-weight:600;font-size:.93rem;}
+.mslot{min-height:40px;border:1px dashed var(--line);border-radius:9px;background:var(--bg);
+  display:flex;align-items:center;padding:4px;}
+.mslot.live{border-color:var(--amber);background:#fdf8ef;}
+.srow .reveal{grid-column:1/-1;}
+.figwrap{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;}
+.fig{width:330px;max-width:100%;flex:0 0 auto;background:#fff;}
+.fig .gl{stroke:#1b2a21;stroke-width:2.5;}
+.fig .ledge{fill:#9fb3a6;}
+.fig .ball{fill:var(--brand);}
+.fig .ball.ghost{fill:none;stroke:var(--brand);stroke-width:2;stroke-dasharray:4 3;}
+.fig .fall{stroke:var(--soft);stroke-width:1.6;stroke-dasharray:5 4;}
+.fig .arrow{fill:var(--soft);}
+.fig .dim{stroke:var(--soft);stroke-width:1.2;}
+.fig .lab{font:12px ui-sans-serif,system-ui,sans-serif;fill:#3e4f45;}
+.fig .lab.b{font-weight:700;}
+.fig .lab.s{font-size:11px;fill:var(--soft);}
+.blanks{flex:1 1 300px;min-width:270px;}
+.brow{display:grid;grid-template-columns:30px 1fr 152px;gap:8px;align-items:center;
+  padding:7px 0;border-top:1px solid var(--line);}
+.brow:first-child{border-top:0;}
+.bnum{color:var(--soft);font-size:.85rem;}
+.blab{font-size:.93rem;}
+.bin{display:flex;align-items:center;gap:7px;justify-content:flex-end;}
+.bin input{width:98px;text-align:right;}
+.brow .reveal{grid-column:1/-1;}
+.reveal{display:none;font-size:.88rem;margin-top:8px;padding:9px 11px;border-radius:8px;line-height:1.45;}
+.reveal.on{display:block;}
+.reveal.good{background:var(--okbg);border-left:3px solid var(--ok);}
+.reveal.bad{background:var(--nobg);border-left:3px solid var(--no);}
+.card.ok{border-color:#b6ddc8;}
+.card.no{border-color:#f0c4c0;}
+.card.part{border-color:#f0d8ae;}
+#gradebar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--brandd);
+  padding:12px 14px;display:flex;gap:10px;align-items:center;}
+#gradebar input{flex:1 1 auto;font:inherit;padding:11px 13px;border:0;border-radius:9px;min-width:0;}
+#gradebtn{flex:0 0 auto;background:var(--amber);color:#2a1c06;border:0;border-radius:9px;
+  padding:12px 20px;font:inherit;font-weight:700;letter-spacing:.03em;cursor:pointer;}
+#gradebar.locked{justify-content:center;color:#fff;font-weight:600;}
+#scorecard{display:none;background:#fff;border:1px solid var(--line);border-radius:12px;
+  padding:18px;margin:4px 0 20px;}
+#scorecard.on{display:block;}
+#scorecard .big{font-size:2.3rem;font-weight:700;color:var(--brandd);line-height:1.1;}
+#scorecard .pct{color:var(--soft);margin-bottom:12px;}
+#scorecard table{width:100%;border-collapse:collapse;font-size:.92rem;}
+#scorecard td,#scorecard th{text-align:left;padding:6px 4px;border-bottom:1px solid var(--line);}
+#scorecard td:last-child,#scorecard th:last-child{text-align:right;}
+#overlay{display:none;position:fixed;inset:0;background:rgba(14,26,20,.55);z-index:60;
+  align-items:center;justify-content:center;padding:20px;}
+#overlay.on{display:flex;}
+#modalbox{background:#fff;border-radius:13px;padding:20px;max-width:420px;width:100%;}
+#modalbox h2{margin:0 0 8px;font-size:1.05rem;}
+#modalbox p{margin:0 0 15px;color:var(--soft);font-size:.93rem;}
+#modalbox .row{display:flex;gap:9px;justify-content:flex-end;}
+#modalbox button{font:inherit;border:0;border-radius:9px;padding:10px 16px;cursor:pointer;}
+#mgo{background:var(--bg);color:var(--ink);}
+#many{background:var(--amber);color:#2a1c06;font-weight:700;}
+@media (max-width:560px){
+  .srow{grid-template-columns:28px 1fr;}
+  .srow .mslot{grid-column:1/-1;}
+  .brow{grid-template-columns:26px 1fr;}
+  .brow .bin{grid-column:1/-1;}
+  .bin input{width:100%;text-align:left;}
+}
+</style></head>
+<body>
+<header><h1>Energy Practice</h1><p>Physics · answer everything, then press GRADE ME</p></header>
+<nav id="nav"></nav>
+<main>
+<div id="scorecard"></div>
+<section class="sec" id="sec0"><h2>Forms of energy <span class="rng">1–10</span></h2><div class="card" id="q0_0">
+  <div class="qn">Questions 1–6</div>
+  <p class="stem">Match each example to the form of energy it is.</p>
+  <div class="tray" id="tray0_0"><span class="trayempty">all placed</span><button type="button" class="tile" id="tile0_0_4" data-k="0_0" data-i="4">thermal energy</button><button type="button" class="tile" id="tile0_0_3" data-k="0_0" data-i="3">gravitational potential energy</button><button type="button" class="tile" id="tile0_0_5" data-k="0_0" data-i="5">radiant energy</button><button type="button" class="tile" id="tile0_0_0" data-k="0_0" data-i="0">chemical potential energy</button><button type="button" class="tile" id="tile0_0_1" data-k="0_0" data-i="1">elastic potential energy</button><button type="button" class="tile" id="tile0_0_2" data-k="0_0" data-i="2">kinetic energy</button></div>
+  <div class="slots"><div class="srow"><div class="snum">1.</div><div class="ssrc">The sandwich in your lunchbox</div><div class="mslot" id="slot0_0_0" data-k="0_0" data-i="0"></div><div class="reveal" id="rv0_0_0"></div></div><div class="srow"><div class="snum">2.</div><div class="ssrc">A stretched rubber band</div><div class="mslot" id="slot0_0_1" data-k="0_0" data-i="1"></div><div class="reveal" id="rv0_0_1"></div></div><div class="srow"><div class="snum">3.</div><div class="ssrc">A car driving down the road</div><div class="mslot" id="slot0_0_2" data-k="0_0" data-i="2"></div><div class="reveal" id="rv0_0_2"></div></div><div class="srow"><div class="snum">4.</div><div class="ssrc">A book resting on a high shelf</div><div class="mslot" id="slot0_0_3" data-k="0_0" data-i="3"></div><div class="reveal" id="rv0_0_3"></div></div><div class="srow"><div class="snum">5.</div><div class="ssrc">The jiggling particles in hot tea</div><div class="mslot" id="slot0_0_4" data-k="0_0" data-i="4"></div><div class="reveal" id="rv0_0_4"></div></div><div class="srow"><div class="snum">6.</div><div class="ssrc">Sunlight crossing space</div><div class="mslot" id="slot0_0_5" data-k="0_0" data-i="5"></div><div class="reveal" id="rv0_0_5"></div></div></div>
+</div><div class="card" id="q0_1">
+  <div class="qn">Question 7</div>
+  <p class="stem">A ball is thrown straight up. At the exact top of its flight, what is true of its energy?</p>
+  <div class="opts"><button type="button" class="opt" id="o0_1_0" data-k="0_1" data-i="0"><span class="ol">a</span><span>all of it is kinetic energy</span></button><button type="button" class="opt" id="o0_1_1" data-k="0_1" data-i="1"><span class="ol">b</span><span>all of it is gravitational potential energy</span></button><button type="button" class="opt" id="o0_1_2" data-k="0_1" data-i="2"><span class="ol">c</span><span>it has no energy at all</span></button><button type="button" class="opt" id="o0_1_3" data-k="0_1" data-i="3"><span class="ol">d</span><span>its energy has been destroyed</span></button></div>
+  <div class="reveal" id="rv0_1"></div>
+</div><div class="card" id="q0_2">
+  <div class="qn">Question 8</div>
+  <p class="stem">We use the word mechanical energy for larger objects. What does it include?</p>
+  <div class="opts"><button type="button" class="opt" id="o0_2_0" data-k="0_2" data-i="0"><span class="ol">a</span><span>only the kinetic energy of the object</span></button><button type="button" class="opt" id="o0_2_1" data-k="0_2" data-i="1"><span class="ol">b</span><span>only the stored energy of the object</span></button><button type="button" class="opt" id="o0_2_2" data-k="0_2" data-i="2"><span class="ol">c</span><span>the kinetic and potential energy of the object itself</span></button><button type="button" class="opt" id="o0_2_3" data-k="0_2" data-i="3"><span class="ol">d</span><span>the energy of the particles inside the object</span></button></div>
+  <div class="reveal" id="rv0_2"></div>
+</div><div class="card" id="q0_3">
+  <div class="qn">Question 9</div>
+  <p class="stem">A skateboarder rolls to a stop without braking. What happened to her mechanical energy?</p>
+  <div class="opts"><button type="button" class="opt" id="o0_3_0" data-k="0_3" data-i="0"><span class="ol">a</span><span>it was destroyed by friction</span></button><button type="button" class="opt" id="o0_3_1" data-k="0_3" data-i="1"><span class="ol">b</span><span>it became thermal energy in the wheels, bearings and ground, plus a little sound</span></button><button type="button" class="opt" id="o0_3_2" data-k="0_3" data-i="2"><span class="ol">c</span><span>it turned back into gravitational potential energy</span></button><button type="button" class="opt" id="o0_3_3" data-k="0_3" data-i="3"><span class="ol">d</span><span>it was used up, because energy runs out</span></button></div>
+  <div class="reveal" id="rv0_3"></div>
+</div><div class="card" id="q0_4">
+  <div class="qn">Question 10</div>
+  <p class="stem">A log burns in a fireplace. Name the energy conversion.</p>
+  <div class="opts"><button type="button" class="opt" id="o0_4_0" data-k="0_4" data-i="0"><span class="ol">a</span><span>chemical potential → thermal and radiant</span></button><button type="button" class="opt" id="o0_4_1" data-k="0_4" data-i="1"><span class="ol">b</span><span>thermal → chemical potential</span></button><button type="button" class="opt" id="o0_4_2" data-k="0_4" data-i="2"><span class="ol">c</span><span>kinetic → chemical potential</span></button><button type="button" class="opt" id="o0_4_3" data-k="0_4" data-i="3"><span class="ol">d</span><span>radiant → elastic potential</span></button></div>
+  <div class="reveal" id="rv0_4"></div>
+</div></section>
+<section class="sec" id="sec1"><h2>Where our electricity comes from <span class="rng">11–23</span></h2><div class="card" id="q1_0">
+  <div class="qn">Questions 11–16</div>
+  <p class="stem">Match each source to its single biggest drawback.</p>
+  <div class="tray" id="tray1_0"><span class="trayempty">all placed</span><button type="button" class="tile" id="tile1_0_4" data-k="1_0" data-i="4">needs a big river, and the dam floods the land behind it</button><button type="button" class="tile" id="tile1_0_3" data-k="1_0" data-i="3">the output rises and falls and nobody controls it</button><button type="button" class="tile" id="tile1_0_5" data-k="1_0" data-i="5">cleaner than coal, but still a fossil fuel that leaks methane</button><button type="button" class="tile" id="tile1_0_0" data-k="1_0" data-i="0">releases the most carbon dioxide per unit of energy</button><button type="button" class="tile" id="tile1_0_1" data-k="1_0" data-i="1">nobody has solved long-term waste storage</button><button type="button" class="tile" id="tile1_0_2" data-k="1_0" data-i="2">produces nothing at night and little in bad weather</button></div>
+  <div class="slots"><div class="srow"><div class="snum">11.</div><div class="ssrc">Coal</div><div class="mslot" id="slot1_0_0" data-k="1_0" data-i="0"></div><div class="reveal" id="rv1_0_0"></div></div><div class="srow"><div class="snum">12.</div><div class="ssrc">Nuclear</div><div class="mslot" id="slot1_0_1" data-k="1_0" data-i="1"></div><div class="reveal" id="rv1_0_1"></div></div><div class="srow"><div class="snum">13.</div><div class="ssrc">Solar</div><div class="mslot" id="slot1_0_2" data-k="1_0" data-i="2"></div><div class="reveal" id="rv1_0_2"></div></div><div class="srow"><div class="snum">14.</div><div class="ssrc">Wind</div><div class="mslot" id="slot1_0_3" data-k="1_0" data-i="3"></div><div class="reveal" id="rv1_0_3"></div></div><div class="srow"><div class="snum">15.</div><div class="ssrc">Hydroelectric</div><div class="mslot" id="slot1_0_4" data-k="1_0" data-i="4"></div><div class="reveal" id="rv1_0_4"></div></div><div class="srow"><div class="snum">16.</div><div class="ssrc">Natural gas</div><div class="mslot" id="slot1_0_5" data-k="1_0" data-i="5"></div><div class="reveal" id="rv1_0_5"></div></div></div>
+</div><div class="card" id="q1_1">
+  <div class="qn">Question 17</div>
+  <p class="stem">Coal wastes most of its energy as heat, yet plants still run it. What is the strongest reason?</p>
+  <div class="opts"><button type="button" class="opt" id="o1_1_0" data-k="1_1" data-i="0"><span class="ol">a</span><span>coal plants are more efficient than any other kind</span></button><button type="button" class="opt" id="o1_1_1" data-k="1_1" data-i="1"><span class="ol">b</span><span>the fuel is cheap, stores easily and can be burned whenever it is needed</span></button><button type="button" class="opt" id="o1_1_2" data-k="1_1" data-i="2"><span class="ol">c</span><span>coal releases no pollution once the plant is built</span></button><button type="button" class="opt" id="o1_1_3" data-k="1_1" data-i="3"><span class="ol">d</span><span>coal is the only source that can run at night</span></button></div>
+  <div class="reveal" id="rv1_1"></div>
+</div><div class="card" id="q1_2">
+  <div class="qn">Question 18</div>
+  <p class="stem">Which three sources are cleaner than coal AND can produce large amounts of power steadily?</p>
+  <div class="opts"><button type="button" class="opt" id="o1_2_0" data-k="1_2" data-i="0"><span class="ol">a</span><span>solar, wind and tidal</span></button><button type="button" class="opt" id="o1_2_1" data-k="1_2" data-i="1"><span class="ol">b</span><span>nuclear, hydroelectric and geothermal</span></button><button type="button" class="opt" id="o1_2_2" data-k="1_2" data-i="2"><span class="ol">c</span><span>biomass, oil and filtered coal</span></button><button type="button" class="opt" id="o1_2_3" data-k="1_2" data-i="3"><span class="ol">d</span><span>wind, solar and biomass</span></button></div>
+  <div class="reveal" id="rv1_2"></div>
+</div><div class="card" id="q1_3">
+  <div class="qn">Question 19</div>
+  <p class="stem">Nuclear releases no carbon dioxide while it runs. Which is the fairest statement of the case against it?</p>
+  <div class="opts"><button type="button" class="opt" id="o1_3_0" data-k="1_3" data-i="0"><span class="ol">a</span><span>it cannot produce enough power to be worth building</span></button><button type="button" class="opt" id="o1_3_1" data-k="1_3" data-i="1"><span class="ol">b</span><span>its fuel will run out within a few years</span></button><button type="button" class="opt" id="o1_3_2" data-k="1_3" data-i="2"><span class="ol">c</span><span>a few serious accidents, and unsolved long-term waste storage</span></button><button type="button" class="opt" id="o1_3_3" data-k="1_3" data-i="3"><span class="ol">d</span><span>it is the most expensive source to run day to day</span></button></div>
+  <div class="reveal" id="rv1_3"></div>
+</div><div class="card" id="q1_4">
+  <div class="qn">Question 20</div>
+  <p class="stem">Solar panels burn nothing and sunlight is free. What is the best single reason we have not covered the country in them?</p>
+  <div class="opts"><button type="button" class="opt" id="o1_4_0" data-k="1_4" data-i="0"><span class="ol">a</span><span>panels stop working after about two years</span></button><button type="button" class="opt" id="o1_4_1" data-k="1_4" data-i="1"><span class="ol">b</span><span>sunlight does not carry enough energy to be useful</span></button><button type="button" class="opt" id="o1_4_2" data-k="1_4" data-i="2"><span class="ol">c</span><span>they are illegal in most states</span></button><button type="button" class="opt" id="o1_4_3" data-k="1_4" data-i="3"><span class="ol">d</span><span>the electricity arrives when demand is low and is gone by the evening peak</span></button></div>
+  <div class="reveal" id="rv1_4"></div>
+</div><div class="card" id="q1_5">
+  <div class="qn">Question 21</div>
+  <p class="stem">Electricity has to be generated in the same second it is used. Which source does that fact hurt the most?</p>
+  <div class="opts"><button type="button" class="opt" id="o1_5_0" data-k="1_5" data-i="0"><span class="ol">a</span><span>wind</span></button><button type="button" class="opt" id="o1_5_1" data-k="1_5" data-i="1"><span class="ol">b</span><span>nuclear</span></button><button type="button" class="opt" id="o1_5_2" data-k="1_5" data-i="2"><span class="ol">c</span><span>natural gas</span></button><button type="button" class="opt" id="o1_5_3" data-k="1_5" data-i="3"><span class="ol">d</span><span>hydroelectric</span></button></div>
+  <div class="reveal" id="rv1_5"></div>
+</div><div class="card" id="q1_6">
+  <div class="qn">Question 22</div>
+  <p class="stem">A town replaces its coal plant with one burning natural gas. Which is the most honest summary of what the town has done?</p>
+  <div class="opts"><button type="button" class="opt" id="o1_6_0" data-k="1_6" data-i="0"><span class="ol">a</span><span>no change worth measuring, since both are fossil fuels</span></button><button type="button" class="opt" id="o1_6_1" data-k="1_6" data-i="1"><span class="ol">b</span><span>a larger cut in emissions than switching to nuclear would have produced</span></button><button type="button" class="opt" id="o1_6_2" data-k="1_6" data-i="2"><span class="ol">c</span><span>a large cut in carbon dioxide, soot and mercury — but the gas is obtained by hydraulic fracturing, and the wells leak methane</span></button><button type="button" class="opt" id="o1_6_3" data-k="1_6" data-i="3"><span class="ol">d</span><span>made things worse, since gas releases more carbon dioxide per unit of energy than coal</span></button></div>
+  <div class="reveal" id="rv1_6"></div>
+</div><div class="card" id="q1_7">
+  <div class="qn">Question 23</div>
+  <p class="stem">Wind and solar are now among the cheapest sources to build per unit of electricity. Utilities keep building natural gas plants alongside them anyway. What explains that best?</p>
+  <div class="opts"><button type="button" class="opt" id="o1_7_0" data-k="1_7" data-i="0"><span class="ol">a</span><span>gas plants are cleaner than wind farms</span></button><button type="button" class="opt" id="o1_7_1" data-k="1_7" data-i="1"><span class="ol">b</span><span>wind and solar equipment wears out within a year or two</span></button><button type="button" class="opt" id="o1_7_2" data-k="1_7" data-i="2"><span class="ol">c</span><span>utilities are required by law to build gas</span></button><button type="button" class="opt" id="o1_7_3" data-k="1_7" data-i="3"><span class="ol">d</span><span>the low price only applies while the wind blows and the sun shines, so a source that can be switched on has to be paid for as well</span></button></div>
+  <div class="reveal" id="rv1_7"></div>
+</div></section>
+<section class="sec" id="sec2"><h2>The equations <span class="rng">24–26</span></h2><p class="secnote">Letters only — no numbers.</p><div class="card" id="q2_0">
+  <div class="qn">Question 24</div>
+  <p class="stem">Write the equation for gravitational potential energy. Use the letters m, g and h.</p>
+  <div class="txtwrap"><input type="text" class="tin" id="in2_0" data-k="2_0" placeholder="type the equation"></div>
+  <div class="reveal" id="rv2_0"></div>
+</div><div class="card" id="q2_1">
+  <div class="qn">Question 25</div>
+  <p class="stem">Write the equation for kinetic energy. Use the letters m and v.</p>
+  <div class="txtwrap"><input type="text" class="tin" id="in2_1" data-k="2_1" placeholder="type the equation"></div>
+  <div class="reveal" id="rv2_1"></div>
+</div><div class="card" id="q2_2">
+  <div class="qn">Question 26</div>
+  <p class="stem">Write the equation for efficiency as a percentage.</p>
+  <div class="txtwrap"><input type="text" class="tin" id="in2_2" data-k="2_2" placeholder="type the equation"></div>
+  <div class="reveal" id="rv2_2"></div>
+</div></section>
+<section class="sec" id="sec3"><h2>Reading an energy conversion <span class="rng">27–33</span></h2><p class="secnote">Use g = 10 m/s² for every calculation in this section and the next.</p><div class="card" id="q3_0">
+  <div class="qn">Questions 27–31</div>
+  <p class="stem">A 3.0 kg ball is held at rest on a ledge 5.0 m above the ground, then dropped. Ignore air resistance. Fill in every blank.</p>
+  <div class="figwrap">
+    <svg viewBox="0 0 360 300" class="fig" role="img"
+   aria-label="A ball on a ledge 5 metres above the ground, falling to the ground">
+  <line x1="18" y1="252" x2="342" y2="252" class="gl"/>
+  <text x="340" y="270" class="lab" text-anchor="end">ground</text>
+  <rect x="18" y="64" width="112" height="9" rx="2" class="ledge"/>
+  <text x="22" y="55" class="lab">ledge</text>
+  <circle cx="150" cy="52" r="13" class="ball"/>
+  <text x="170" y="50" class="lab b">m = 3.0 kg</text>
+  <text x="170" y="66" class="lab">at rest</text>
+  <line x1="150" y1="72" x2="150" y2="230" class="fall"/>
+  <polygon points="144,226 156,226 150,238" class="arrow"/>
+  <circle cx="150" cy="239" r="13" class="ball ghost"/>
+  <line x1="248" y1="73" x2="248" y2="252" class="dim"/>
+  <line x1="243" y1="73" x2="253" y2="73" class="dim"/>
+  <line x1="243" y1="252" x2="253" y2="252" class="dim"/>
+  <text x="258" y="162" class="lab b">h = 5.0 m</text>
+  <text x="22" y="100" class="lab s">top</text>
+  <text x="22" y="244" class="lab s">bottom</text>
+</svg>
+    <div class="blanks"><div class="brow"><div class="bnum">27.</div><div class="blab">GPE at the top</div><div class="bin"><input type="text" inputmode="decimal" id="in3_0_0" data-k="3_0" data-i="0" placeholder="?"><span class="unit">J</span></div><div class="reveal" id="rv3_0_0"></div></div><div class="brow"><div class="bnum">28.</div><div class="blab">KE at the top</div><div class="bin"><input type="text" inputmode="decimal" id="in3_0_1" data-k="3_0" data-i="1" placeholder="?"><span class="unit">J</span></div><div class="reveal" id="rv3_0_1"></div></div><div class="brow"><div class="bnum">29.</div><div class="blab">GPE at the ground</div><div class="bin"><input type="text" inputmode="decimal" id="in3_0_2" data-k="3_0" data-i="2" placeholder="?"><span class="unit">J</span></div><div class="reveal" id="rv3_0_2"></div></div><div class="brow"><div class="bnum">30.</div><div class="blab">KE at the ground</div><div class="bin"><input type="text" inputmode="decimal" id="in3_0_3" data-k="3_0" data-i="3" placeholder="?"><span class="unit">J</span></div><div class="reveal" id="rv3_0_3"></div></div><div class="brow"><div class="bnum">31.</div><div class="blab">speed at the ground</div><div class="bin"><input type="text" inputmode="decimal" id="in3_0_4" data-k="3_0" data-i="4" placeholder="?"><span class="unit">m/s</span></div><div class="reveal" id="rv3_0_4"></div></div></div>
+  </div>
+</div><div class="card" id="q3_1">
+  <div class="qn">Question 32</div>
+  <p class="stem">On the diagram above, what happens to the TOTAL energy as the ball falls?</p>
+  <div class="opts"><button type="button" class="opt" id="o3_1_0" data-k="3_1" data-i="0"><span class="ol">a</span><span>it increases, because the ball speeds up</span></button><button type="button" class="opt" id="o3_1_1" data-k="3_1" data-i="1"><span class="ol">b</span><span>it stays the same, with one form becoming another</span></button><button type="button" class="opt" id="o3_1_2" data-k="3_1" data-i="2"><span class="ol">c</span><span>it decreases, because height is lost</span></button><button type="button" class="opt" id="o3_1_3" data-k="3_1" data-i="3"><span class="ol">d</span><span>it depends on the mass</span></button></div>
+  <div class="reveal" id="rv3_1"></div>
+</div><div class="card" id="q3_2">
+  <div class="qn">Question 33</div>
+  <p class="stem">The ball is replaced with a heavier one, dropped from the same ledge. What happens to its speed at the ground?</p>
+  <div class="opts"><button type="button" class="opt" id="o3_2_0" data-k="3_2" data-i="0"><span class="ol">a</span><span>it is faster</span></button><button type="button" class="opt" id="o3_2_1" data-k="3_2" data-i="1"><span class="ol">b</span><span>it is slower</span></button><button type="button" class="opt" id="o3_2_2" data-k="3_2" data-i="2"><span class="ol">c</span><span>it is exactly the same</span></button><button type="button" class="opt" id="o3_2_3" data-k="3_2" data-i="3"><span class="ol">d</span><span>it depends on the shape</span></button></div>
+  <div class="reveal" id="rv3_2"></div>
+</div></section>
+<section class="sec" id="sec4"><h2>Conversion problems <span class="rng">34–37</span></h2><p class="secnote">Use g = 10 m/s².</p><div class="card" id="q4_0">
+  <div class="qn">Question 34</div>
+  <p class="stem">A 0.25 kg apple falls from a branch 1.8 m above the ground. Find its speed just before it lands.</p>
+  <div class="numwrap"><input type="text" inputmode="decimal" id="in4_0" data-k="4_0" placeholder="answer"><span class="unit">m/s</span></div>
+  <div class="reveal" id="rv4_0"></div>
+</div><div class="card" id="q4_1">
+  <div class="qn">Question 35</div>
+  <p class="stem">A 60 kg skater starts from rest at the top of a ramp 2.0 m high. Find her kinetic energy at the bottom, assuming no friction.</p>
+  <div class="numwrap"><input type="text" inputmode="decimal" id="in4_1" data-k="4_1" placeholder="answer"><span class="unit">J</span></div>
+  <div class="reveal" id="rv4_1"></div>
+</div><div class="card" id="q4_2">
+  <div class="qn">Question 36</div>
+  <p class="stem">A ball is thrown straight up at 5.0 m/s. Find how high it rises.</p>
+  <div class="numwrap"><input type="text" inputmode="decimal" id="in4_2" data-k="4_2" placeholder="answer"><span class="unit">m</span></div>
+  <div class="reveal" id="rv4_2"></div>
+</div><div class="card" id="q4_3">
+  <div class="qn">Question 37</div>
+  <p class="stem">A 1.5 kg ball has 48 J of kinetic energy. Find its speed.</p>
+  <div class="numwrap"><input type="text" inputmode="decimal" id="in4_3" data-k="4_3" placeholder="answer"><span class="unit">m/s</span></div>
+  <div class="reveal" id="rv4_3"></div>
+</div></section>
+</main>
+<div id="gradebar"><input id="nameinput" placeholder="Type your name" autocomplete="name"><button id="gradebtn">GRADE ME</button></div>
+<div id="overlay"><div id="modalbox"><h2 id="mtitle"></h2><p id="mtext"></p><div class="row"><button id="mgo">Go back</button><button id="many">Grade anyway</button></div></div></div>
+
+<script>
+const SECTIONS=[{"name":"Forms of energy","items":[{"t":"match","tiles":[{"text":"chemical potential energy","e":"Food stores energy in the bonds between atoms. Your body releases it by breaking those bonds."},{"text":"elastic potential energy","e":"Stored by stretching or squashing something that wants to return to its shape."},{"text":"kinetic energy","e":"Energy an object has because it is moving. One thing, not several kinds."},{"text":"gravitational potential energy","e":"Stored by position. Lift it higher and you store more."},{"text":"thermal energy","e":"The kinetic and potential energy of the particles added together. That sum is what temperature measures."},{"text":"radiant energy","e":"Energy carried by electromagnetic waves. It needs no material to travel through."}]},{"t":"mc","a":1,"o":["all of it is kinetic energy","all of it is gravitational potential energy","it has no energy at all","its energy has been destroyed"],"e":"Thrown straight up, the ball is momentarily not moving at the top, so there is no kinetic energy left. All of it is stored as height."},{"t":"mc","a":2,"o":["only the kinetic energy of the object","only the stored energy of the object","the kinetic and potential energy of the object itself","the energy of the particles inside the object"],"e":"Mechanical energy is about the object as a whole. Thermal energy is the same idea applied to its particles."},{"t":"mc","a":1,"o":["it was destroyed by friction","it became thermal energy in the wheels, bearings and ground, plus a little sound","it turned back into gravitational potential energy","it was used up, because energy runs out"],"e":"Friction does not destroy energy. It moves it into the particles of whatever is rubbing, which is thermal energy."},{"t":"mc","a":0,"o":["chemical potential → thermal and radiant","thermal → chemical potential","kinetic → chemical potential","radiant → elastic potential"],"e":"The energy was in the wood’s chemical bonds, put there by sunlight when the tree grew."}]},{"name":"Where our electricity comes from","items":[{"t":"match","tiles":[{"text":"releases the most carbon dioxide per unit of energy","e":"It is the dirtiest of the fossil fuels, and it also releases mercury and sulphur."},{"text":"nobody has solved long-term waste storage","e":"The waste stays dangerous for thousands of years and is still mostly sitting at the plants that made it."},{"text":"produces nothing at night and little in bad weather","e":"Its output peaks at midday, which is not when homes use the most."},{"text":"the output rises and falls and nobody controls it","e":"The grid has to make up the difference the second the wind drops."},{"text":"needs a big river, and the dam floods the land behind it","e":"The good sites are limited and already mostly used, and the flooding displaces people and habitat."},{"text":"cleaner than coal, but still a fossil fuel that leaks methane","e":"It halves the carbon dioxide of coal but does not remove it, and leaked methane is a potent greenhouse gas."}]},{"t":"mc","a":1,"o":["coal plants are more efficient than any other kind","the fuel is cheap, stores easily and can be burned whenever it is needed","coal releases no pollution once the plant is built","coal is the only source that can run at night"],"e":"Dispatchability is the real advantage: you can decide when to burn it. Nuclear, gas and hydro share that; wind and solar do not."},{"t":"mc","a":1,"o":["solar, wind and tidal","nuclear, hydroelectric and geothermal","biomass, oil and filtered coal","wind, solar and biomass"],"e":"All three run around the clock without burning fuel. Solar and wind are cleaner too, but neither runs steadily."},{"t":"mc","a":2,"o":["it cannot produce enough power to be worth building","its fuel will run out within a few years","a few serious accidents, and unsolved long-term waste storage","it is the most expensive source to run day to day"],"e":"Day-to-day running is cheap; the cost is in building it. The honest objections are accidents and waste."},{"t":"mc","a":3,"o":["panels stop working after about two years","sunlight does not carry enough energy to be useful","they are illegal in most states","the electricity arrives when demand is low and is gone by the evening peak"],"e":"This is the timing problem. It is why storage is the live question in the industry rather than the panels themselves."},{"t":"mc","a":0,"o":["wind","nuclear","natural gas","hydroelectric"],"e":"Wind output is set by the weather. The other three can be turned up and down on command."},{"t":"mc","a":2,"o":["no change worth measuring, since both are fossil fuels","a larger cut in emissions than switching to nuclear would have produced","a large cut in carbon dioxide, soot and mercury — but the gas is obtained by hydraulic fracturing, and the wells leak methane","made things worse, since gas releases more carbon dioxide per unit of energy than coal"],"e":"Gas really is a vast improvement at the smokestack, roughly halving the carbon dioxide and nearly removing the soot and mercury. The costs moved rather than vanished: fracturing uses large volumes of water and chemicals, and leaked methane is a far stronger greenhouse gas than carbon dioxide while it lasts."},{"t":"mc","a":3,"o":["gas plants are cleaner than wind farms","wind and solar equipment wears out within a year or two","utilities are required by law to build gas","the low price only applies while the wind blows and the sun shines, so a source that can be switched on has to be paid for as well"],"e":"This is the real tension in the argument. Cheap per unit of electricity produced is not the same as cheap to depend on. A grid that must deliver power every second pays twice — once for the cheap clean source and again for the backup that covers it — and that second bill is what keeps gas in the mix."}]},{"name":"The equations","items":[{"t":"text","kind":"gpe","model":"GPE = mgh","e":"Mass × the acceleration due to gravity × height."},{"t":"text","kind":"ke","model":"KE = ½mv²","e":"Half the mass times the square of the speed. Square the speed before you halve anything."},{"t":"text","kind":"eff","model":"efficiency = energy out ÷ energy in × 100","e":"A percentage, because it compares what you got with what you paid."}]},{"name":"Reading an energy conversion","items":[{"t":"diagram","blanks":[{"a":150,"u":"J","e":"GPE = mgh = (3.0)(10)(5.0) = 150 J"},{"a":0,"u":"J","e":"It is held at rest, so it is not moving and has no kinetic energy."},{"a":0,"u":"J","e":"The ground is the level we are calling zero height, so there is no stored height energy left."},{"a":150,"u":"J","e":"Nothing was lost, so all 150 J that started as GPE is now kinetic."},{"a":10,"u":"m/s","e":"Set KE = ½mv²: 150 = ½(3.0)v², so v² = 100 and v = 10 m/s."}]},{"t":"mc","a":1,"o":["it increases, because the ball speeds up","it stays the same, with one form becoming another","it decreases, because height is lost","it depends on the mass"],"e":"That is conservation of energy. The total never changed; only its form did."},{"t":"mc","a":2,"o":["it is faster","it is slower","it is exactly the same","it depends on the shape"],"e":"Mass appears on both sides of mgh = ½mv² and cancels. Only the height decides the speed."}]},{"name":"Conversion problems","items":[{"t":"num","a":6,"u":"m/s","e":"The mass cancels: v = √(2gh) = √(2 × 10 × 1.8) = √36 = 6.0 m/s. The 0.25 kg is never used."},{"t":"num","a":1200,"u":"J","e":"All the GPE becomes KE, so KE = mgh = (60)(10)(2.0) = 1200 J."},{"t":"num","a":1.25,"u":"m","e":"h = v² ÷ 2g = 25 ÷ 20 = 1.25 m."},{"t":"num","a":8,"u":"m/s","e":"v² = 2KE ÷ m = 96 ÷ 1.5 = 64, so v = 8.0 m/s."}]}];
+const META=[{"name":"Forms of energy","first":1,"last":10},{"name":"Where our electricity comes from","first":11,"last":23},{"name":"The equations","first":24,"last":26},{"name":"Reading an energy conversion","first":27,"last":33},{"name":"Conversion problems","first":34,"last":37}];
+const TOTAL=37;
+let graded=false;
+
+/* ---------- state ---------- */
+const pick={};      // mc selections
+const placed={};    // match: slotIndex -> tileIndex
+const typed={};     // text / num / diagram inputs
+
+/* ---------- answer matching ---------- */
+function normNum(s){
+  if(s===null||s===undefined)return null;
+  const t=String(s).replace(/[, ]/g,'').replace(/[^0-9eE.+-]/g,'');
+  if(t==='')return null;
+  const v=parseFloat(t);
+  return isFinite(v)?v:null;
+}
+function numOk(got,want){
+  if(got===null)return false;
+  const tol=Math.max(0.02, Math.abs(want)*0.01);
+  return Math.abs(got-want)<=tol;
+}
+function normText(s){
+  return String(s||'').toLowerCase()
+    .replace(/\s+/g,'')
+    .replace(/[*·×]/g,'')
+    .replace(/(?<=[a-z0-9])x(?=[a-z0-9])/g,'')
+    .replace(/\^2/g,'²')
+    .replace(/0\.5|1\/2/g,'½')
+    .replace(/[()]/g,'');
+}
+function textOk(kind,raw){
+  let s=normText(raw);
+  if(!s)return false;
+  s=s.replace(/^(gpe|pe|ke|e|efficiency|eff)=/,'');
+  if(kind==='gpe'){
+    // nothing but the three letters, in any order
+    if(!/^[mgh]{3}$/.test(s))return false;
+    return s.split('').sort().join('')==='ghm';
+  }
+  if(kind==='ke'){
+    const hasHalf = s.indexOf('½')===0 || /\/2$/.test(s);
+    return hasHalf && s.indexOf('m')>=0 && s.indexOf('v²')>=0;
+  }
+  if(kind==='eff'){
+    const hasOut=/out|output/.test(s), hasIn=/in|input/.test(s);
+    return hasOut&&hasIn&&s.indexOf('100')>=0;
+  }
+  if(kind==='gval'){
+    const v=normNum(raw);
+    return v!==null && Math.abs(v-9.8)<=0.05;
+  }
+  return false;
+}
+
+/* ---------- wiring ---------- */
+document.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>{
+  if(graded)return;
+  const k=b.dataset.k;
+  document.querySelectorAll('#q'+k+' .opt').forEach(o=>o.classList.remove('sel'));
+  b.classList.add('sel');
+  pick[k]=+b.dataset.i;
+  chips();
+}));
+
+let held=null;
+function clearLive(){document.querySelectorAll('.mslot.live').forEach(s=>s.classList.remove('live'));}
+function refreshTray(k,el){
+  const tray=el||document.getElementById('tray'+k);
+  if(!tray)return;
+  const empty=tray.querySelector('.trayempty');
+  const has=tray.querySelectorAll('.tile').length>0;
+  if(empty)empty.style.display=has?'none':'block';
+}
+document.querySelectorAll('.tile').forEach(t=>t.addEventListener('click',()=>{
+  if(graded)return;
+  const k=t.dataset.k;
+  if(t.parentElement.classList.contains('mslot')){
+    const slot=t.parentElement;
+    delete placed[k+'|'+slot.dataset.i];
+    document.getElementById('tray'+k).appendChild(t);
+    refreshTray(k); chips(); return;
+  }
+  if(held===t){held.classList.remove('pick');held=null;clearLive();return;}
+  if(held)held.classList.remove('pick');
+  held=t; t.classList.add('pick');
+  clearLive();
+  document.querySelectorAll('#q'+k+' .mslot').forEach(s=>s.classList.add('live'));
+}));
+document.querySelectorAll('.mslot').forEach(slot=>slot.addEventListener('click',()=>{
+  if(graded||!held)return;
+  const k=slot.dataset.k;
+  if(held.dataset.k!==k)return;
+  const sitting=slot.querySelector('.tile');
+  if(sitting){
+    document.getElementById('tray'+k).appendChild(sitting);
+    delete placed[k+'|'+slot.dataset.i];
+  }
+  slot.appendChild(held);
+  placed[k+'|'+slot.dataset.i]=+held.dataset.i;
+  held.classList.remove('pick'); held=null; clearLive();
+  refreshTray(k); chips();
+}));
+document.querySelectorAll('input[data-k]').forEach(inp=>inp.addEventListener('input',()=>{
+  if(graded)return;
+  const key=inp.dataset.i!==undefined?inp.dataset.k+'|'+inp.dataset.i:inp.dataset.k;
+  typed[key]=inp.value;
+  chips();
+}));
+
+/* ---------- progress chips ---------- */
+function answeredIn(si){
+  let done=0,tot=0;
+  SECTIONS[si].items.forEach((it,ii)=>{
+    const k=si+'_'+ii;
+    if(it.t==='match'){
+      it.tiles.forEach((_,ti)=>{tot++; if(placed[k+'|'+ti]!==undefined)done++;});
+    }else if(it.t==='diagram'){
+      it.blanks.forEach((_,bi)=>{tot++; if((typed[k+'|'+bi]||'').trim()!=='')done++;});
+    }else if(it.t==='mc'){
+      tot++; if(pick[k]!==undefined)done++;
+    }else{
+      tot++; if((typed[k]||'').trim()!=='')done++;
+    }
+  });
+  return [done,tot];
+}
+const nav=document.getElementById('nav');
+META.forEach((m,si)=>{
+  const b=document.createElement('button');
+  b.innerHTML=m.name+' <span class="chip" id="chip'+si+'"></span>';
+  b.onclick=()=>document.getElementById('sec'+si).scrollIntoView({behavior:'smooth',block:'start'});
+  nav.appendChild(b);
+});
+function chips(){
+  META.forEach((m,si)=>{
+    const [d,t]=answeredIn(si);
+    const el=document.getElementById('chip'+si);
+    if(el)el.textContent=d+'/'+t;
+    nav.children[si].classList.toggle('done',d===t);
+  });
+}
+chips();
+
+/* ---------- grading ---------- */
+function unfinished(){
+  let miss=0;
+  META.forEach((m,si)=>{const [d,t]=answeredIn(si);miss+=t-d;});
+  return miss;
+}
+function showModal(title,text,showAny){
+  document.getElementById('mtitle').textContent=title;
+  document.getElementById('mtext').textContent=text;
+  document.getElementById('many').style.display=showAny?'':'none';
+  document.getElementById('overlay').classList.add('on');
+}
+document.getElementById('mgo').onclick=()=>document.getElementById('overlay').classList.remove('on');
+document.getElementById('many').onclick=()=>{document.getElementById('overlay').classList.remove('on');doGrade();};
+document.getElementById('gradebtn').onclick=()=>{
+  if(graded)return;
+  if(!document.getElementById('nameinput').value.trim()){
+    showModal('Name needed','Type your name in the box before grading, so you can show this to Mr. Murray.',false);return;
+  }
+  const miss=unfinished();
+  if(miss>0){showModal('Still blank','You have '+miss+' unanswered '+(miss===1?'box':'boxes')+'. You can go back, or grade it as it stands.',true);return;}
+  doGrade();
+};
+
+function say(id,good,html){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.className='reveal on '+(good?'good':'bad');
+  el.innerHTML=html;
+}
+
+function doGrade(){
+  graded=true;
+  let score=0;
+  const rows=[];
+
+  SECTIONS.forEach((sec,si)=>{
+    let sgot=0,stot=0;
+    sec.items.forEach((it,ii)=>{
+      const k=si+'_'+ii, card=document.getElementById('q'+k);
+      if(it.t==='match'){
+        let right=0;
+        it.tiles.forEach((tk,ti)=>{
+          stot++;
+          const got=placed[k+'|'+ti];
+          const ok=got===ti;
+          if(ok){right++;score++;sgot++;}
+          const slot=document.getElementById('slot'+k+'_'+ti);
+          const tile=slot?slot.querySelector('.tile'):null;
+          if(tile)tile.classList.add(ok?'ok':'bad');
+          say('rv'+k+'_'+ti,ok,'<b>'+tk.text+'</b> \u2014 '+tk.e);
+        });
+        card.classList.add(right===it.tiles.length?'ok':(right===0?'no':'part'));
+        return;
+      }
+      if(it.t==='diagram'){
+        let right=0;
+        it.blanks.forEach((b,bi)=>{
+          stot++;
+          const ok=numOk(normNum(typed[k+'|'+bi]),b.a);
+          if(ok){right++;score++;sgot++;}
+          const inp=document.getElementById('in'+k+'_'+bi);
+          if(inp)inp.disabled=true;
+          say('rv'+k+'_'+bi,ok,'<b>'+b.a+' '+b.u+'</b> \u2014 '+b.e);
+        });
+        card.classList.add(right===it.blanks.length?'ok':(right===0?'no':'part'));
+        return;
+      }
+      stot++;
+      if(it.t==='mc'){
+        const got=pick[k], ok=got===it.a;
+        if(ok){score++;sgot++;}
+        const chosen=document.getElementById('o'+k+'_'+got);
+        if(chosen)chosen.classList.add(ok?'ok':'no');
+        const right=document.getElementById('o'+k+'_'+it.a);
+        if(right)right.classList.add('ok');
+        card.classList.add(ok?'ok':'no');
+        say('rv'+k,ok,'<b>'+String.fromCharCode(97+it.a)+') '+it.o[it.a]+'</b> \u2014 '+it.e);
+      }else if(it.t==='text'){
+        const ok=textOk(it.kind,typed[k]);
+        if(ok){score++;sgot++;}
+        const inp=document.getElementById('in'+k);
+        if(inp)inp.disabled=true;
+        card.classList.add(ok?'ok':'no');
+        say('rv'+k,ok,'<b>'+it.model+'</b> \u2014 '+it.e);
+      }else{
+        const ok=numOk(normNum(typed[k]),it.a);
+        if(ok){score++;sgot++;}
+        const inp=document.getElementById('in'+k);
+        if(inp)inp.disabled=true;
+        card.classList.add(ok?'ok':'no');
+        say('rv'+k,ok,'<b>'+it.a+' '+it.u+'</b> \u2014 '+it.e);
+      }
+    });
+    rows.push([sec.name,sgot,stot]);
+  });
+
+  const sc=document.getElementById('scorecard');
+  const pct=Math.round(score/TOTAL*100);
+  sc.innerHTML='<div class="big">'+score+' / '+TOTAL+'</div>'
+    +'<div class="pct">'+pct+'% \u00b7 '+document.getElementById('nameinput').value.trim()+'</div>'
+    +'<table><tr><th>Section</th><th>Score</th></tr>'
+    +rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+' / '+r[2]+'</td></tr>').join('')
+    +'</table>';
+  sc.classList.add('on');
+
+  document.querySelectorAll('.opt').forEach(o=>o.disabled=true);
+  document.querySelectorAll('.tile').forEach(t=>t.disabled=true);
+  const bar=document.getElementById('gradebar');
+  bar.classList.add('locked');
+  bar.innerHTML='Graded and locked \u2014 scroll up for your score';
+  sc.scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body></html>
